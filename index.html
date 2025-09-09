@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinFlow - Modern Budget Planner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+ <!-- Password Overlay -->
+    <div id="passwordOverlay">
+        <div id="passwordCard">
+            <h2><i class="fas fa-lock"></i> Welcome to FinFlow</h2>
+            <p>Enter your access code to unlock your personal budget dashboard</p>
+            <input type="password" id="sitePassword" placeholder="Enter access code">
+            <button id="submitPassword"><i class="fas fa-unlock"></i> Unlock Dashboard</button>
+            <p id="passwordError">Incorrect code. Please try again.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-wallet"></i> FinFlow</h1>
+            <p id="userNameDisplay">Your Smart Budget Companion</p>
+            <button class="theme-toggle" id="themeToggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </header>
+
+        <!-- Account Setup -->
+        <section class="card" id="setupSection">
+            <button class="section-toggle">
+                <span><i class="fas fa-cog"></i> Account Setup</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="section-content">
+                <form id="setupForm">
+                    <label for="userName"><i class="fas fa-user"></i> Your Name:</label>
+                    <input type="text" id="userName" placeholder="Enter your name" required>
+                    
+                    <label for="bankSelect"><i class="fas fa-university"></i> Bank:</label>
+                    <select id="bankSelect" required>
+                        <option value="">Select Bank</option>
+                        <optgroup label="Canadian Banks">
+                            <option value="CIBC">CIBC</option>
+                            <option value="RBC">RBC Royal Bank</option>
+                            <option value="TD">TD Canada Trust</option>
+                            <option value="Scotiabank">Scotiabank</option>
+                            <option value="BMO">BMO</option>
+                            <option value="National Bank">National Bank of Canada</option>
+                            <option value="Desjardins">Desjardins</option>
+                        </optgroup>
+                        <optgroup label="Nigerian Banks">
+                            <option value="Access Bank">Access Bank</option>
+                            <option value="Zenith Bank">Zenith Bank</option>
+                            <option value="GTBank">GTBank (Guaranty Trust)</option>
+                            <option value="First Bank">First Bank of Nigeria</option>
+                            <option value="UBA">United Bank for Africa (UBA)</option>
+                            <option value="Fidelity Bank">Fidelity Bank</option>
+                            <option value="Union Bank">Union Bank of Nigeria</option>
+                        </optgroup>
+                        <optgroup label="Other Banks">
+                            <option value="SBI">SBI (India)</option>
+                            <option value="Other">Other / Custom</option>
+                        </optgroup>
+                    </select>
+                    
+                    <label id="bankOtherLabel" style="display:none;"><i class="fas fa-university"></i> Custom Bank Name:
+                        <input type="text" id="bankOtherText" placeholder="Enter bank name">
+                    </label>
+
+                    <label for="currencySelect"><i class="fas fa-money-bill-wave"></i> Currency:</label>
+                    <select id="currencySelect" required>
+                        <option value="">Select Currency</option>
+                        <option value="CAD">CAD (CA$ - Canadian Dollar)</option>
+                        <option value="USD">USD ($ - US Dollar)</option>
+                        <option value="EUR">EUR (€ - Euro)</option>
+                        <option value="GBP">GBP (£ - British Pound)</option>
+                        <option value="INR">INR (₹ - Indian Rupee)</option>
+                        <option value="NGN">NGN (₦ - Nigerian Naira)</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <label for="startingBalance"><i class="fas fa-piggy-bank"></i> Current Account Balance:</label>
+                    <input type="number" id="startingBalance" placeholder="Enter amount" step="0.01" required>
+                    
+                    <label for="startingSavings"><i class="fas fa-coins"></i> Savings:</label>
+                    <input type="number" id="startingSavings" placeholder="Enter savings" step="0.01" value="0">
+
+                    <button type="submit"><i class="fas fa-save"></i> Save & Initialize</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Dashboard -->
+        <section class="card" id="dashboard">
+            <h2><i class="fas fa-chart-line"></i> Financial Overview</h2>
+            <div class="dashboard-grid">
+                <div class="dashboard-card bank" data-modal="bank">
+                    <i class="fas fa-university"></i>
+                    <h3>Bank</h3>
+                    <div class="amount" id="displayBank">-</div>
+                </div>
+                
+                <div class="dashboard-card currency" data-modal="currency">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <h3>Currency</h3>
+                    <div class="amount" id="displayCurrency">-</div>
+                </div>
+                
+                <div class="dashboard-card current-balance" data-modal="balance">
+                    <i class="fas fa-wallet"></i>
+                    <h3>Account Balance</h3>
+                    <div class="amount" id="displayBalance">0.00</div>
+                </div>
+                
+                <div class="dashboard-card savings" data-modal="savings">
+                    <i class="fas fa-piggy-bank"></i>
+                    <h3>Savings</h3>
+                    <div class="amount" id="displaySavings">0.00</div>
+                </div>
+                
+                <div class="dashboard-card owetome" data-modal="owetome">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <h3>Owed To Me</h3>
+                    <div class="amount" id="displayOwingMe">0.00</div>
+                </div>
+                
+                <div class="dashboard-card owebyme" data-modal="owebyme">
+                    <i class="fas fa-credit-card"></i>
+                    <h3>I Owe Others</h3>
+                    <div class="amount" id="displayOwingOthers">0.00</div>
+                </div>
+                
+                <div class="dashboard-card upcoming-payments" data-modal="upcoming">
+                    <i class="fas fa-calendar-alt"></i>
+                    <h3>Upcoming Payments</h3>
+                    <div class="amount" id="displayUpcomingTotal">0.00</div>
+                </div>
+                
+                <div class="dashboard-card net-balance" data-modal="net">
+                    <i class="fas fa-chart-pie"></i>
+                    <h3>Net Worth</h3>
+                    <div class="amount" id="displayNet">0.00</div>
+                </div>
+            </div>
+
+            <!-- Budget Progress Bar -->
+            <div class="text-center mt-20">
+                <h3>Budget Utilization</h3>
+                <div class="budget-progress">
+                    <div class="progress-fill" id="budgetProgress" style="width: 0%;"></div>
+                </div>
+                <p id="budgetText">0% used (Income: 0 | Expenses: 0)</p>
+            </div>
+
+            <!-- Simple Pie Chart for Expenses -->
+            <div class="chart-container">
+                <canvas id="expenseChart"></canvas>
+            </div>
+
+            <div class="text-center">
+                <button id="deleteAllBtn" style="background: linear-gradient(135deg, var(--danger), #d63031); max-width: 250px; margin: 0 auto;">
+                    <i class="fas fa-trash-alt"></i> Clear All Data (Confirm)
+                </button>
+                <p style="font-size: 0.9rem; color: var(--gray); margin-top: 10px;">This will reset everything to defaults.</p>
+            </div>
+        </section>
+
+        <!-- Income Section -->
+        <section class="card" id="incomeSection">
+            <button class="section-toggle">
+                <span><i class="fas fa-money-bill-trend-up"></i> Income Tracking</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="section-content">
+                <h3>Add New Income</h3>
+                <input type="text" id="incomeDesc" placeholder="e.g., Salary, Freelance">
+                <input type="number" id="incomeAmount" placeholder="Amount" step="0.01" required>
+                <button id="addIncomeBtn" class="add-btn"><i class="fas fa-plus-circle"></i> Add Income</button>
+                
+                <div class="mb-20 text-center">
+                    <strong>Total Income: <span id="displayTotalIncome">0.00</span></strong>
+                </div>
+                
+                <ul id="incomeList"></ul>
+            </div>
+        </section>
+
+        <!-- Expenses Section -->
+        <section class="card" id="expensesSection">
+            <button class="section-toggle">
+                <span><i class="fas fa-shopping-cart"></i> Expense Tracking</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="section-content">
+                <h3>Add New Expense</h3>
+                <input type="text" id="expenseDesc" placeholder="e.g., Groceries, Rent" required>
+                <input type="text" id="expenseCategory" placeholder="Category (e.g., Food, Transport)">
+                <input type="number" id="expenseAmount" placeholder="Amount" step="0.01" required>
+                <button id="addExpenseBtn" class="add-btn"><i class="fas fa-plus-circle"></i> Add Expense</button>
+                
+                <div class="mb-20 text-center">
+                    <strong>Total Expenses: <span id="displayTotalExpenses">0.00</span></strong>
+                </div>
+                
+                <ul id="expenseList"></ul>
+            </div>
+        </section>
+
+        <!-- Owing Section -->
+        <section class="card" id="owingSection">
+            <button class="section-toggle">
+                <span><i class="fas fa-handshake"></i> Debts & Loans</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="section-content">
+                <h3>Track Transactions with Others</h3>
+                <input type="text" id="owingName" placeholder="Person's name" required>
+                <input type="number" id="owingAmount" placeholder="Amount" step="0.01" required>
+                <select id="owingType" required>
+                    <option value="">Select Type</option>
+                    <option value="they-owe-me">They Owe Me (+)</option>
+                    <option value="i-owe">I Owe Them (-)</option>
+                </select>
+                <button id="addOwingBtn" class="add-btn"><i class="fas fa-plus-circle"></i> Add Transaction</button>
+                <ul id="owingList"></ul>
+            </div>
+        </section>
+
+        <!-- Upcoming Payments Section -->
+        <section class="card" id="upcomingSection">
+            <button class="section-toggle">
+                <span><i class="fas fa-calendar-check"></i> Upcoming Bills</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="section-content">
+                <h3>Schedule Future Payments</h3>
+                <input type="text" id="upcomingDesc" placeholder="e.g., Rent, Utilities" required>
+                <input type="number" id="upcomingAmount" placeholder="Amount" step="0.01" required>
+                <input type="date" id="upcomingDate">
+                <button id="addUpcomingBtn" class="add-btn"><i class="fas fa-plus-circle"></i> Schedule Payment</button>
+                <ul id="upcomingList"></ul>
+            </div>
+        </section>
+
+        <!-- Goals Section -->
+        <section class="card" id="goalsSection">
+            <button class="section-toggle">
+                <span><i class="fas fa-bullseye"></i> Financial Goals</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="section-content">
+                <h3>Set & Track Goals</h3>
+                <input type="text" id="goalDesc" placeholder="e.g., Emergency Fund, Vacation">
+                <input type="number" id="goalTarget" placeholder="Target Amount" step="0.01" required>
+                <input type="number" id="goalCurrent" placeholder="Current Saved" step="0.01" value="0">
+                <button id="addGoalBtn" class="add-btn"><i class="fas fa-plus-circle"></i> Add Goal</button>
+                
+                <ul id="goalsList"></ul>
+            </div>
+        </section>
+
+        <!-- Reports Section -->
+        <section class="card" id="reportsSection">
+            <button class="section-toggle">
+                <span><i class="fas fa-chart-bar"></i> Monthly Reports</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="section-content">
+                <h3>September 2025 Summary</h3>
+                <p id="monthlySummary">Loading...</p>
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Income</th>
+                            <th>Expenses</th>
+                            <th>Net</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+                <div class="chart-container mt-20">
+                    <canvas id="monthlyChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section class="card" id="historySection">
+            <button class="section-toggle">
+                <span><i class="fas fa-history"></i> Transaction History</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="section-content">
+                <h3>View Past Transactions</h3>
+                <div class="flex text-center mb-20">
+                    <input type="date" id="historyDateInput" style="max-width: 200px;">
+                    <button id="viewHistoryBtn" class="add-btn" style="max-width: auto; padding: 16px 24px;"><i class="fas fa-search"></i> Filter by Date</button>
+                    <button id="exportHistoryBtn" class="add-btn" style="background: linear-gradient(135deg, var(--warning), #f0932b); max-width: auto; padding: 16px 24px; margin-left: 10px;"><i class="fas fa-download"></i> Export</button>
+                </div>
+                <div id="historyList"></div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>&copy; 2025 FinFlow - Your Smart Budget Companion | Built with <i class="fas fa-heart" style="color: var(--accent);"></i> for Financial Freedom</p>
+        </footer>
+    </div>
+
+    <!-- Chatbot -->
+    <button id="chatbotButton" title="Ask FinFlow AI">
+        <i class="fas fa-robot"></i>
+    </button>
+    <div id="chatbotWindow">
+        <div id="chatbotHeader">
+            <span><i class="fas fa-robot"></i> FinFlow AI Assistant</span>
+            <button class="close-modal" id="closeChatbot"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="chatbotMessages">
+            <div class="message bot-message">
+                Hello! I'm here to help with your budget. Ask me about tips, summaries, goals, or calculations.
+            </div>
+        </div>
+        <div id="chatbotInput">
+            <input type="text" id="chatInput" placeholder="Type your message...">
+            <button id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modalOverlay">
+        <div id="modalContent">
+            <div class="modal-header">
+                <h3 id="modalTitle">Details</h3>
+                <button class="close-modal" id="closeModal"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    
+</body>
+</html>
