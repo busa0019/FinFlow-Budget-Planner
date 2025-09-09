@@ -25,7 +25,7 @@ FinFlow is a modern, user-friendly web application designed to help you manage y
 ![Monthly Report](images/report.jpg)
 
 *Chatbot Interface*  
-![Chatbot](images/chatbot.jpg)
+![Chatbot](images/chatbox.jpg)
 
 ## Prerequisites
 
